@@ -24,5 +24,6 @@ jobs:
       - name: de-label
         run: | 
           gh pr edit ${{ github.event.pull_request.number }} -R ${{ github.repository }} --remove-label foo
+          gh pr comment ${{ github.event.pull_request.number }} -R ${{ github.repository }} --body "Hi from GitHub CLI, we removed your `foo` label!"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
