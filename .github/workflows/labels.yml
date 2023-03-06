@@ -1,0 +1,29 @@
+name: labels
+
+on:
+  pull_request:
+    types: [ labeled ]
+  label:
+    
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' &&
+      (github.event.action == 'labeled' ) &&
+      contains(github.event.pull_request.labels.*.name, 'foo')
+
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
+      - name: de-label
+        run: | 
+          gh pr edit ${{ github.event.pull_request.number }} -R ${{ github.repository }} --remove-label foo
+          gh pr comment ${{ github.event.pull_request.number }} -R ${{ github.repository }} --body "Hi from GitHub CLI, we removed your `foo` label!"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
